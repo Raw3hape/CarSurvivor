@@ -40,7 +40,7 @@ export function createGlobeScene(): GlobeScene {
     attach: (index) => globe.attach(index),
     sync: (state, index) => globe.sync(state, index, rig.distance()),
     pickLonLat: (x, y) => pickLonLatAt(rig.camera, globe.pickSphere, x, y),
-    pickRegion: (x, y, index, state) => pickRegionId(rig.camera, globe.pickSphere, x, y, index, state),
+    pickRegion: (x, y, index, state) => pickRegionId(rig.camera, globe.land, globe.pickSphere, x, y, index, state),
     orbit: (dx, dy) => applyOrbit(rig, dx, dy, 0),
     dolly: (logDelta) => applyOrbit(rig, 0, 0, logDelta),
     setHeld: (held) => rig.setHeld(held),

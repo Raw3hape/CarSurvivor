@@ -1,8 +1,8 @@
 :root {
-  color-scheme: dark;
-  --space: #08070f;
-  --clay: #1f1914;
+  color-scheme: light;
+  --space: #e7e2d8;
+  --clay: #f4efe6;
   --glaze: #c5d2dc;
-  --ink: #e4dcc8;
-  --panel: #101218;
+  --ink: #2a261f;
+  --panel: #f7f3ec;
 }

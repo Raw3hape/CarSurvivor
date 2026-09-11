@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { evidencePng, isDarkRgb, probe, waitReady } from './helpers';
+import { evidencePng, isLightRgb, probe, waitReady } from './helpers';
 
 test.describe('Clay Earth', () => {
   test.describe.configure({ mode: 'serial' });
@@ -34,7 +34,7 @@ test.describe('Clay Earth', () => {
     await expect(page.locator('canvas')).toHaveCount(1);
 
     const background = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
-    expect(isDarkRgb(background), `body background should be dark, got ${background}`).toBe(true);
+    expect(isLightRgb(background), `body background should be light, got ${background}`).toBe(true);
 
     await expect(page.getByText('WASD')).toHaveCount(0);
   });
@@ -48,7 +48,7 @@ test.describe('Clay Earth', () => {
 
     await page.waitForFunction(() => Boolean(window.__CS_WEB__?.originId), undefined, { timeout: 60_000 });
 
-    await expect(page.getByText(/Варшава|Warsaw/).first()).toBeVisible();
+    await expect(page.getByText(/Польша|Poland|Варшава|Warsaw/).first()).toBeVisible();
     await page.screenshot({ path: evidencePng('pw-origin.png'), fullPage: true });
   });
 

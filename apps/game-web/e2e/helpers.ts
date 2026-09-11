@@ -53,3 +53,10 @@ export function isDarkRgb(color: string): boolean {
   const [r, g, b] = rgb;
   return (0.2126 * r + 0.7152 * g + 0.0722 * b) < 48;
 }
+
+export function isLightRgb(color: string): boolean {
+  const rgb = parseRgb(color);
+  if (!rgb) return false;
+  const [r, g, b] = rgb;
+  return (0.2126 * r + 0.7152 * g + 0.0722 * b) > 160;
+}

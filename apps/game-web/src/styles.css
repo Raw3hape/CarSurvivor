@@ -1,10 +1,10 @@
 @import './ui/tokens.css';
 
 :root {
-  --muted: color-mix(in srgb, var(--ink) 55%, var(--space));
-  --cool: color-mix(in srgb, var(--glaze) 38%, var(--space));
-  --stroke: color-mix(in srgb, var(--ink) 14%, transparent);
-  --groove: color-mix(in srgb, var(--clay) 82%, #000);
+  --muted: color-mix(in srgb, var(--ink) 66%, var(--space));
+  --cool: color-mix(in oklab, var(--glaze) 42%, var(--ink));
+  --stroke: color-mix(in srgb, var(--ink) 18%, transparent);
+  --groove: color-mix(in srgb, var(--clay) 70%, var(--ink));
   --font-display: "Piazzolla", "Iowan Old Style", "Palatino Linotype", Palatino, serif;
   --font-mono: "Martian Mono", ui-monospace, monospace;
 }
@@ -73,7 +73,7 @@ body {
   inset: 0;
   display: grid;
   place-items: center;
-  background: radial-gradient(ellipse at center, transparent 42%, color-mix(in srgb, var(--space) 42%, transparent) 100%);
+  background: radial-gradient(ellipse at center, transparent 42%, color-mix(in srgb, var(--space) 58%, transparent) 100%);
 }
 
 .hud-origin-form,
@@ -113,7 +113,7 @@ body {
   border-bottom: 1px solid color-mix(in srgb, var(--ink) 28%, transparent);
   background: transparent;
   color: var(--ink);
-  caret-color: var(--glaze);
+  caret-color: var(--cool);
   font-family: var(--font-display);
   font-size: 1.125rem;
   letter-spacing: -0.01em;
@@ -144,7 +144,7 @@ body {
 .hud-origin-submit {
   font-size: 0.95rem;
   letter-spacing: 0.04em;
-  color: var(--glaze);
+  color: var(--cool);
 }
 
 .hud-origin-geo {
@@ -190,7 +190,7 @@ body {
   padding: 14px 14px 12px;
   border: 1px solid var(--stroke);
   border-radius: 2px;
-  background: color-mix(in srgb, var(--panel) 88%, var(--space));
+  background: color-mix(in srgb, var(--panel) 92%, var(--clay));
 }
 
 .hud-home {
@@ -284,7 +284,7 @@ body {
   height: 3px;
   overflow: hidden;
   border-radius: 1px;
-  background: color-mix(in srgb, var(--groove) 78%, rgba(228, 221, 200, 0.16));
+  background: color-mix(in srgb, var(--groove) 42%, var(--clay));
 }
 
 .hud-glaze-fill {
@@ -292,12 +292,12 @@ body {
   height: 100%;
   width: 0%;
   background: linear-gradient(90deg, var(--glaze-a, var(--glaze)), var(--glaze-b, var(--glaze)));
-  box-shadow: 0 0 8px color-mix(in srgb, var(--glaze-a, var(--glaze)) 35%, transparent);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--glaze-a, var(--glaze)) 22%, transparent);
   transition: width 0.35s ease-out;
 }
 
 .hud-glaze-fill.is-wet {
-  filter: brightness(1.08) saturate(1.08);
+  filter: saturate(1.1);
 }
 
 .hud-glaze-pct {
@@ -331,7 +331,7 @@ body {
   height: 18px;
   width: auto;
   max-width: 32px;
-  border: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ink) 22%, transparent);
   border-radius: 1px;
   object-fit: cover;
 }
@@ -340,7 +340,7 @@ body {
   width: 11px;
   height: 11px;
   border-radius: 1px;
-  border: 1px solid color-mix(in srgb, var(--space) 70%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ink) 22%, transparent);
   box-shadow: inset 0 0 0 1px var(--stroke);
 }
 
@@ -352,7 +352,7 @@ body {
   text-align: left;
   font-size: 0.9rem;
   letter-spacing: 0.02em;
-  color: var(--glaze);
+  color: var(--cool);
 }
 
 .hud-choice {
@@ -398,7 +398,7 @@ body {
   margin-top: 4px;
   font-family: var(--font-mono);
   font-size: 0.75rem;
-  color: var(--glaze);
+  color: var(--cool);
 }
 
 .hud-offer:disabled .hud-offer-cost {
@@ -414,7 +414,7 @@ body {
 
 button:focus-visible,
 input:focus-visible {
-  outline: 1px solid var(--glaze);
+  outline: 1px solid var(--cool);
   outline-offset: 3px;
 }
 

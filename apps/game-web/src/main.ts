@@ -21,7 +21,7 @@ import { mountHud, type HudModel } from './ui/hud';
 import { loadWorld, regionFact, regionFlag, regionIso, type WorldIndex } from './world/catalog';
 import { flagPngUrl } from './world/flagUrl';
 import { lodForDistance } from './world/lod';
-import { findOrigin, originFromLonLat } from './world/origin';
+import { countryOf, findOrigin, originFromLonLat } from './world/origin';
 import './styles.css';
 
 const canvas = document.querySelector<HTMLCanvasElement>('#game');
@@ -90,8 +90,11 @@ async function startLab(canvasEl: HTMLCanvasElement, hudEl: HTMLElement) {
 
   function takeOrigin(regionId: string): void {
     if (state.originId) return;
-    chooseOrigin(state, index, regionId);
-    flyToRegion(regionId);
+    const region = index.byId.get(regionId);
+    if (!region) return;
+    const country = countryOf(index, region);
+    chooseOrigin(state, index, country.id);
+    flyToRegion(country.id);
   }
 
   function flyToRegion(regionId: string): void {

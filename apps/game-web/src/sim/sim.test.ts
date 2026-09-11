@@ -148,7 +148,7 @@ describe('clay earth sim', () => {
     const state = createGame(index);
     chooseOrigin(state, index, 'city:a1');
     boostPaint(state);
-    tick(state, index, 0.2);
+    tick(state, index, 0.05);
     expect(runtime(state, 'city:a1').painting).toBe(true);
     expect(runtime(state, 'city:a1').progress).toBeGreaterThan(0);
   });

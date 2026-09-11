@@ -29,8 +29,11 @@ export function canUnlock(state: GameState, index: WorldIndex, regionId: string)
 
 export function offers(state: GameState, index: WorldIndex): UnlockOffer[] {
   const rules = index.catalog.rules;
+  const origin = state.originId ? index.byId.get(state.originId) : undefined;
+  const kind = origin?.kind;
   const list: UnlockOffer[] = [];
   for (const region of index.catalog.regions) {
+    if (kind && region.kind !== kind) continue;
     if (!canUnlock(state, index, region.id)) continue;
     const cost = unlockCost(rules, region.areaKm2);
     list.push({

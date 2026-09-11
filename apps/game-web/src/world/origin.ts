@@ -59,3 +59,14 @@ export function originFromLonLat(index: WorldIndex, lon: number, lat: number): R
     smallestRegionAt(point, regions, new Set(['country']))
   );
 }
+
+export function countryOf(index: WorldIndex, region: Region): Region {
+  let current: Region | undefined = region;
+  const seen = new Set<string>();
+  while (current && !seen.has(current.id)) {
+    seen.add(current.id);
+    if (current.kind === 'country') return current;
+    current = current.parentId ? index.byId.get(current.parentId) : undefined;
+  }
+  return region;
+}

@@ -1,6 +1,6 @@
 import type { SimRules } from '../world/types';
 
-export const ORIGIN_PAINT_MUL = 4;
+export const ORIGIN_PAINT_MUL = 6;
 
 export function paintRate(rules: SimRules, areaKm2: number, boosting: boolean, origin = false): number {
   const base = rules.paintPerSecondAt1km2 / Math.pow(Math.max(areaKm2, 0.5), rules.areaExponent);

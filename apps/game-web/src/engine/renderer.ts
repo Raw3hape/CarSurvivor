@@ -18,7 +18,7 @@ export async function createLabRenderer(canvas: HTMLCanvasElement): Promise<LabR
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setSize(window.innerWidth, window.innerHeight, false);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.02;
+  renderer.toneMappingExposure = 1.12;
   renderer.shadowMap.enabled = false;
   await renderer.init();
 

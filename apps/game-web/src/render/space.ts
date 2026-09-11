@@ -8,6 +8,9 @@ export function applySpace(scene: THREE.Scene): void {
   const ambient = new THREE.AmbientLight(LOOK.light.ambient.color, LOOK.light.ambient.intensity);
   scene.add(ambient);
 
+  const hemi = new THREE.HemisphereLight(0xfff8ef, 0xd9e6f0, 0.7);
+  scene.add(hemi);
+
   const key = new THREE.DirectionalLight(LOOK.light.key.color, LOOK.light.key.intensity);
   key.position.set(LOOK.light.key.x, LOOK.light.key.y, LOOK.light.key.z);
   scene.add(key);
@@ -19,4 +22,8 @@ export function applySpace(scene: THREE.Scene): void {
   const rim = new THREE.DirectionalLight(LOOK.light.rim.color, LOOK.light.rim.intensity);
   rim.position.set(LOOK.light.rim.x, LOOK.light.rim.y, LOOK.light.rim.z);
   scene.add(rim);
+
+  const back = new THREE.DirectionalLight(LOOK.light.back.color, LOOK.light.back.intensity);
+  back.position.set(LOOK.light.back.x, LOOK.light.back.y, LOOK.light.back.z);
+  scene.add(back);
 }
