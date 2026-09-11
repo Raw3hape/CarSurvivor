@@ -11,6 +11,7 @@ export type RegionSelected = {
   painting: boolean;
   facts: string[];
   flagColors: string[];
+  flagSrc: string | null;
 };
 
 export type RegionCardView = {
@@ -109,20 +110,28 @@ export function mountRegionCard(handlers: {
       }
       factsEl.hidden = selected.facts.length === 0;
 
-      const nextFlags = selected.flagColors.join(',');
+      const nextFlags = selected.flagSrc ?? selected.flagColors.join(',');
       if (nextFlags !== flagsKey) {
         flagsKey = nextFlags;
-        flagsEl.replaceChildren(
-          ...selected.flagColors.map((color) => {
-            const chip = document.createElement('span');
-            chip.className = 'hud-chip';
-            chip.style.background = color;
-            chip.title = color;
-            return chip;
-          }),
-        );
+        if (selected.flagSrc) {
+          const img = document.createElement('img');
+          img.className = 'hud-flag-img';
+          img.alt = '';
+          img.src = selected.flagSrc;
+          flagsEl.replaceChildren(img);
+        } else {
+          flagsEl.replaceChildren(
+            ...selected.flagColors.map((color) => {
+              const chip = document.createElement('span');
+              chip.className = 'hud-chip';
+              chip.style.background = color;
+              chip.title = color;
+              return chip;
+            }),
+          );
+        }
       }
-      flagsEl.hidden = selected.flagColors.length === 0;
+      flagsEl.hidden = !selected.flagSrc && selected.flagColors.length === 0;
 
       boost.hidden = !(selected.unlocked && selected.progress < 1);
     },

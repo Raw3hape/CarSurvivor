@@ -29,6 +29,7 @@ export type HudModel = {
     painting: boolean;
     facts: string[];
     flagColors: string[];
+    flagSrc: string | null;
   };
   offers: Array<{ id: string; name: string; kind: string; cost: number; affordable: boolean }>;
   phase: 'origin' | 'play';

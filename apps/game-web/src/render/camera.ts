@@ -10,6 +10,7 @@ export type GlobeCamera = {
   orbit: (dx: number, dy: number) => void;
   dolly: (logDelta: number) => void;
   flyTo: (lon: number, lat: number, distance: number) => void;
+  setHeld: (held: boolean) => void;
   tick: (dt: number) => void;
   distance: () => number;
   resize: () => void;
@@ -25,9 +26,12 @@ export function createGlobeCamera(): GlobeCamera {
   let lon = 20;
   let lat = 18;
   let radius: number = LOOK.camera.spaceDistance;
-  let tLon = lon;
-  let tLat = lat;
   let tRadius: number = radius;
+  let vLon = 0;
+  let vLat = 0;
+  let held = false;
+  let userSpun = false;
+  let flying = false;
 
   const apply = () => {
     const pos = lonLatToWorld({ lon, lat }, radius);
@@ -49,21 +53,49 @@ export function createGlobeCamera(): GlobeCamera {
       return radius;
     },
     orbit: (dx, dy) => {
-      tLon -= dx * 0.18;
-      tLat = Math.min(88, Math.max(-88, tLat + dy * 0.14));
+      if (!dx && !dy) return;
+      const s = LOOK.camera.spin.sensitivity;
+      const dLon = dx * s;
+      const dLat = dy * s * 0.72;
+      lon -= dLon;
+      lat = Math.min(88, Math.max(-88, lat + dLat));
+      vLon = -dLon * 18;
+      vLat = dLat * 18;
+      userSpun = true;
+      flying = false;
     },
     dolly: (logDelta) => {
       tRadius = Math.min(LOOK.camera.maxDistance, Math.max(LOOK.camera.minDistance, tRadius * Math.exp(logDelta)));
     },
     flyTo: (nextLon, nextLat, distance) => {
-      tLon = nextLon;
-      tLat = Math.min(88, Math.max(-88, nextLat));
+      lon = nextLon;
+      lat = Math.min(88, Math.max(-88, nextLat));
       tRadius = Math.min(LOOK.camera.maxDistance, Math.max(LOOK.camera.minDistance, distance));
+      vLon = 0;
+      vLat = 0;
+      flying = true;
+      userSpun = true;
+    },
+    setHeld: (next) => {
+      held = next;
+      if (next) {
+        userSpun = true;
+        vLon = 0;
+        vLat = 0;
+      }
     },
     tick: (dt) => {
+      if (!held) {
+        lon += vLon * dt;
+        lat = Math.min(88, Math.max(-88, lat + vLat * dt));
+        const damp = Math.exp(-dt * LOOK.camera.spin.inertia);
+        vLon *= damp;
+        vLat *= damp;
+        if (!flying && !userSpun && radius > LOOK.camera.countryDistance) {
+          lon += LOOK.camera.spin.autoDegPerSec * dt;
+        }
+      }
       const k = 1 - Math.exp(-dt * 3.1);
-      lon = lerpAngle(lon, tLon, k);
-      lat += (tLat - lat) * k;
       radius += (tRadius - radius) * k;
       apply();
     },
@@ -73,9 +105,4 @@ export function createGlobeCamera(): GlobeCamera {
       camera.updateProjectionMatrix();
     },
   };
-}
-
-function lerpAngle(a: number, b: number, t: number): number {
-  let d = ((b - a + 540) % 360) - 180;
-  return a + d * t;
 }

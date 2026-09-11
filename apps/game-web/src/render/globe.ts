@@ -6,6 +6,8 @@ import { regionFlag } from '../world/catalog';
 import { lonLatToWorld } from '../world/project';
 import { isCircleGeom, type LonLat, type Polygon, type Region } from '../world/types';
 import { cityVisualKm } from '../world/cityScale';
+import { isoFromFlag } from '../world/flagUrl';
+import { disposeFlagTextures, flagTexture } from './flagTextures';
 import { flagSample, mixClay } from './glaze';
 import { landScale } from './height';
 import { LOOK } from './look';
@@ -16,6 +18,7 @@ export type RegionMesh = {
   kind: Region['kind'];
   lastProgress: number;
   lastPainting: boolean;
+  lastTex: boolean;
 };
 
 const CLAY_RGB = {
@@ -49,12 +52,6 @@ export function createGlobe(): {
   pickSphere.scale.y = LOOK.globe.flattenY;
   group.add(pickSphere);
 
-  const landMat = new THREE.MeshStandardNodeMaterial({
-    vertexColors: true,
-    roughness: LOOK.clay.roughness,
-    metalness: LOOK.clay.metalness,
-    side: THREE.DoubleSide,
-  });
   const grooveMat = new THREE.LineBasicNodeMaterial({ color: LOOK.clay.groove, transparent: true, opacity: 0.7 });
 
   const countryMeshes: RegionMesh[] = [];
@@ -73,7 +70,7 @@ export function createGlobe(): {
     }
     const borderPos: number[] = [];
     for (const region of index.countries) {
-      const built = buildRegionMesh(region, index, landMat);
+      const built = buildRegionMesh(region, index);
       if (!built) continue;
       land.add(built.mesh);
       countryMeshes.push(built);
@@ -101,12 +98,12 @@ export function createGlobe(): {
     if (extraBorders) extraBorders.visible = showAdmin;
 
     if (showAdmin && state.focusedCountryId && builtCountry !== state.focusedCountryId) {
-      rebuildExtras(adminGroup, extraMeshes, 'admin1', index, state.focusedCountryId, landMat);
+      rebuildExtras(adminGroup, extraMeshes, 'admin1', index, state.focusedCountryId);
       builtCountry = state.focusedCountryId;
       rebuildExtraBorders(index, state.focusedCountryId, 'admin1');
     }
     if (showCity && state.focusedAdminId && builtAdmin !== state.focusedAdminId) {
-      rebuildExtras(cityGroup, extraMeshes, 'city', index, state.focusedAdminId, landMat);
+      rebuildExtras(cityGroup, extraMeshes, 'city', index, state.focusedAdminId);
       builtAdmin = state.focusedAdminId;
     }
     if (!showAdmin) {
@@ -142,12 +139,12 @@ export function createGlobe(): {
     attach,
     sync,
     dispose: () => {
-      landMat.dispose();
       oceanMat.dispose();
       grooveMat.dispose();
       pickSphere.geometry.dispose();
       borders?.geometry.dispose();
       extraBorders?.geometry.dispose();
+      disposeFlagTextures();
     },
   };
 }
@@ -158,18 +155,20 @@ function rebuildExtras(
   kind: Region['kind'],
   index: WorldIndex,
   parentId: string,
-  material: THREE.MeshStandardNodeMaterial,
 ): void {
   const keep = bucket.filter((item) => item.kind !== kind);
   bucket.length = 0;
   bucket.push(...keep);
   while (group.children.length) {
     const child = group.children[0];
-    if (child) group.remove(child);
+    if (child) {
+      disposeMesh(child);
+      group.remove(child);
+    }
   }
   for (const region of index.childrenOf(parentId)) {
     if (region.kind !== kind) continue;
-    const built = buildRegionMesh(region, index, material);
+    const built = buildRegionMesh(region, index);
     if (!built) continue;
     group.add(built.mesh);
     bucket.push(built);
@@ -180,42 +179,88 @@ function clearGroup(group: THREE.Group, bucket: RegionMesh[]): void {
   bucket.length = 0;
   while (group.children.length) {
     const child = group.children[0];
-    if (child) group.remove(child);
+    if (child) {
+      disposeMesh(child);
+      group.remove(child);
+    }
   }
+}
+
+function disposeMesh(object: THREE.Object3D): void {
+  if (!(object instanceof THREE.Mesh)) return;
+  object.geometry.dispose();
+  const mat = object.material;
+  if (Array.isArray(mat)) mat.forEach((item) => item.dispose());
+  else mat.dispose();
+}
+
+function makeLandMat(): THREE.MeshStandardNodeMaterial {
+  return new THREE.MeshStandardNodeMaterial({
+    vertexColors: true,
+    roughness: LOOK.clay.roughness,
+    metalness: LOOK.clay.metalness,
+    side: THREE.DoubleSide,
+  });
 }
 
 function paintMesh(item: RegionMesh, state: GameState, index: WorldIndex): void {
   const runtime = state.regions[item.id];
   const progress = runtime?.progress ?? 0;
   const painting = runtime?.painting ?? false;
-  if (item.lastProgress === progress && item.lastPainting === painting) return;
-  item.lastProgress = progress;
-  item.lastPainting = painting;
   const region = index.byId.get(item.id);
   if (!region) return;
   const flag = regionFlag(index, region);
+  const iso = isoFromFlag(flag, region);
+  const tex = iso ? flagTexture(iso) : null;
+  const texReady = !!tex;
+  if (item.lastProgress === progress && item.lastPainting === painting && item.lastTex === texReady) return;
+  item.lastProgress = progress;
+  item.lastPainting = painting;
+  item.lastTex = texReady;
+  const shown = region.kind === 'city' ? Math.max(progress, 0.4) : progress;
+  const mat = item.mesh.material as THREE.MeshStandardNodeMaterial;
+  if (tex && shown > 0.02) {
+    if (mat.map !== tex) {
+      mat.map = tex;
+      mat.vertexColors = false;
+      mat.needsUpdate = true;
+    }
+    const clayR = ((LOOK.clay.unpainted >> 16) & 255) / 255;
+    const clayG = ((LOOK.clay.unpainted >> 8) & 255) / 255;
+    const clayB = (LOOK.clay.unpainted & 255) / 255;
+    const wet = painting && shown < 1 ? 1.08 : 1;
+    mat.color.setRGB(
+      Math.min(1, (clayR + (1 - clayR) * shown) * wet),
+      Math.min(1, (clayG + (1 - clayG) * shown) * wet),
+      Math.min(1, (clayB + (1 - clayB) * shown) * wet),
+    );
+    mat.roughness = LOOK.clay.roughness + (LOOK.glaze.roughness - LOOK.clay.roughness) * shown;
+    return;
+  }
   const color = item.mesh.geometry.getAttribute('color');
   const uv = item.mesh.geometry.getAttribute('uv');
   if (!color || !uv) return;
   for (let i = 0; i < color.count; i += 1) {
     const sample = flagSample(flag, uv.getX(i), uv.getY(i));
-    const shown = region.kind === 'city' ? Math.max(progress, 0.34) : progress;
     const mixed = mixClay(sample, shown, painting);
     color.setXYZ(i, mixed.r, mixed.g, mixed.b);
   }
   color.needsUpdate = true;
 }
 
-function buildRegionMesh(
-  region: Region,
-  index: WorldIndex,
-  material: THREE.MeshStandardNodeMaterial,
-): RegionMesh | null {
+function buildRegionMesh(region: Region, index: WorldIndex): RegionMesh | null {
   const geometry = regionGeometry(region);
   if (!geometry) return null;
-  const mesh = new THREE.Mesh(geometry, material);
+  const mesh = new THREE.Mesh(geometry, makeLandMat());
   mesh.userData.regionId = region.id;
-  const built: RegionMesh = { id: region.id, mesh, kind: region.kind, lastProgress: -1, lastPainting: false };
+  const built: RegionMesh = {
+    id: region.id,
+    mesh,
+    kind: region.kind,
+    lastProgress: -1,
+    lastPainting: false,
+    lastTex: false,
+  };
   const dummy = { regions: { [region.id]: { progress: 0, painting: false } } } as unknown as GameState;
   paintMesh(built, dummy, index);
   return built;

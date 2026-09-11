@@ -112,6 +112,7 @@ describe('clay earth sim', () => {
     expect(state.focusedCountryId).toBe('country:AA');
     expect(state.focusedAdminId).toBe('admin1:AA-1');
     expect(runtime(state, 'city:a1').unlocked).toBe(true);
+    expect(runtime(state, 'city:a1').painting).toBe(true);
     expect(state.economy.paint).toBe(RULES.originGrant);
 
     chooseOrigin(state, index, 'city:a2');
@@ -129,16 +130,17 @@ describe('clay earth sim', () => {
     expect(startPaint(small, index, 'city:a1')).toBe(true);
     expect(startPaint(large, index, 'city:b2')).toBe(true);
 
-    tick(small, index, 1);
-    tick(large, index, 1);
-    expect(runtime(small, 'city:a1').progress).toBeCloseTo(paintRate(RULES, 4, false));
-    expect(runtime(large, 'city:b2').progress).toBeCloseTo(paintRate(RULES, 36, false));
+    tick(small, index, 0.2);
+    tick(large, index, 0.2);
+    expect(runtime(small, 'city:a1').progress).toBeCloseTo(paintRate(RULES, 4, false, true) * 0.2);
+    expect(runtime(large, 'city:b2').progress).toBeCloseTo(paintRate(RULES, 36, false, true) * 0.2);
     expect(runtime(small, 'city:a1').progress).toBeGreaterThan(runtime(large, 'city:b2').progress);
 
-    tick(small, index, 1);
+    tick(small, index, 2);
     expect(runtime(small, 'city:a1').progress).toBe(1);
     expect(runtime(small, 'city:a1').painting).toBe(false);
     expect(startPaint(small, index, 'city:a1')).toBe(false);
+    expect(runtime(small, 'admin1:AA-1').unlocked).toBe(true);
   });
 
   it('boost without startPaint still paints', () => {
@@ -161,11 +163,11 @@ describe('clay earth sim', () => {
     startPaint(boosted, index, 'city:a1');
     boostPaint(boosted);
 
-    tick(plain, index, 1);
-    tick(boosted, index, 1);
-    expect(runtime(plain, 'city:a1').progress).toBeCloseTo(0.5);
-    expect(runtime(boosted, 'city:a1').progress).toBeCloseTo(1);
-    expect(runtime(boosted, 'city:a1').painting).toBe(false);
+    tick(plain, index, 0.15);
+    tick(boosted, index, 0.15);
+    expect(runtime(plain, 'city:a1').progress).toBeCloseTo(paintRate(RULES, 4, false, true) * 0.15);
+    expect(runtime(boosted, 'city:a1').progress).toBeCloseTo(paintRate(RULES, 4, true, true) * 0.15);
+    expect(runtime(boosted, 'city:a1').progress).toBeGreaterThan(runtime(plain, 'city:a1').progress);
   });
 
   it('yields paint from completed regions', () => {
@@ -191,7 +193,8 @@ describe('clay earth sim', () => {
     tick(state, index, 2);
     expect(runtime(state, 'city:a1').progress).toBe(1);
     expect(canUnlock(state, index, 'city:a2')).toBe(true);
-    expect(canUnlock(state, index, 'admin1:AA-1')).toBe(true);
+    expect(runtime(state, 'admin1:AA-1').unlocked).toBe(true);
+    expect(canUnlock(state, index, 'admin1:AA-1')).toBe(false);
     expect(canUnlock(state, index, 'city:b1')).toBe(false);
     expect(canUnlock(state, index, 'country:BB')).toBe(false);
 
@@ -222,9 +225,8 @@ describe('clay earth sim', () => {
     const listed = offers(state, index);
     expect(listed.length).toBeGreaterThan(0);
     expect(listed.length).toBeLessThanOrEqual(8);
-    expect(listed.map((row) => row.id)).toEqual(['city:a2', 'admin1:AA-1']);
+    expect(listed.map((row) => row.id)).toEqual(['city:a2']);
     expect(listed[0]).toEqual({ id: 'city:a2', cost: unlockCost(RULES, 16), affordable: true });
-    expect(listed[1]).toEqual({ id: 'admin1:AA-1', cost: unlockCost(RULES, 100), affordable: false });
     for (let i = 1; i < listed.length; i += 1) {
       expect(listed[i]!.cost).toBeGreaterThanOrEqual(listed[i - 1]!.cost);
     }

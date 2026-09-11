@@ -326,6 +326,16 @@ body {
   margin-top: 10px;
 }
 
+.hud-flag-img {
+  display: block;
+  height: 18px;
+  width: auto;
+  max-width: 32px;
+  border: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
+  border-radius: 1px;
+  object-fit: cover;
+}
+
 .hud-chip {
   width: 11px;
   height: 11px;

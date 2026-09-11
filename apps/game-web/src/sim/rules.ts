@@ -1,8 +1,10 @@
 import type { SimRules } from '../world/types';
 
-export function paintRate(rules: SimRules, areaKm2: number, boosting: boolean): number {
+export const ORIGIN_PAINT_MUL = 4;
+
+export function paintRate(rules: SimRules, areaKm2: number, boosting: boolean, origin = false): number {
   const base = rules.paintPerSecondAt1km2 / Math.pow(Math.max(areaKm2, 0.5), rules.areaExponent);
-  return Math.max(0.002, base) * (boosting ? rules.boostMultiplier : 1);
+  return Math.max(0.002, base) * (boosting ? rules.boostMultiplier : 1) * (origin ? ORIGIN_PAINT_MUL : 1);
 }
 
 export function unlockCost(rules: SimRules, areaKm2: number): number {

@@ -18,7 +18,8 @@ import {
 } from './sim';
 import type { GameState } from './sim/types';
 import { mountHud, type HudModel } from './ui/hud';
-import { loadWorld, regionFact, regionFlag, type WorldIndex } from './world/catalog';
+import { loadWorld, regionFact, regionFlag, regionIso, type WorldIndex } from './world/catalog';
+import { flagPngUrl } from './world/flagUrl';
 import { lodForDistance } from './world/lod';
 import { findOrigin, originFromLonLat } from './world/origin';
 import './styles.css';
@@ -171,6 +172,7 @@ async function startLab(canvasEl: HTMLCanvasElement, hudEl: HTMLElement) {
     if (cmd?.unlockId) unlockRegion(state, index, cmd.unlockId);
 
     const sample = pointer.sample();
+    globe.setHeld(sample.dragging);
     globe.orbit(sample.dx, sample.dy);
     globe.dolly(sample.wheel);
     if (sample.tapNdc) onTap(sample.tapNdc);
@@ -204,6 +206,18 @@ async function startLab(canvasEl: HTMLCanvasElement, hudEl: HTMLElement) {
     });
     renderer.render(globe.scene, globe.camera);
   };
+
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        if (state.originId) return;
+        const region = originFromLonLat(index, pos.coords.longitude, pos.coords.latitude);
+        if (region) takeOrigin(region.id);
+      },
+      () => undefined,
+      { enableHighAccuracy: false, timeout: 4000 },
+    );
+  }
 
   writeProbe({
     ready: false,
@@ -274,6 +288,10 @@ function toHud(state: GameState, index: WorldIndex, backend: string, fps: number
           painting: runtime.painting,
           facts: regionFact(index, selected)?.lines ?? [],
           flagColors: regionFlag(index, selected)?.colors ?? [],
+          flagSrc: (() => {
+            const iso = regionIso(index, selected);
+            return iso ? flagPngUrl(iso, 80) : null;
+          })(),
         }
       : null,
     offers: offerRows,

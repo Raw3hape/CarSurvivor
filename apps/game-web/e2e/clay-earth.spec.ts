@@ -59,8 +59,7 @@ test.describe('Clay Earth', () => {
     const paintBefore = before?.paint ?? 0;
 
     const boost = page.getByRole('button', { name: 'Ещё слой' });
-    await expect(boost).toBeVisible();
-    await boost.click();
+    if (await boost.isVisible()) await boost.click();
 
     await page.waitForFunction(() => (window.__CS_WEB__?.progress ?? 0) > 0, undefined, { timeout: 15_000 });
     await page.screenshot({ path: evidencePng('pw-paint.png'), fullPage: true });

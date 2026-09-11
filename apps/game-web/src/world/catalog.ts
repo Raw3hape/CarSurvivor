@@ -64,6 +64,11 @@ export function regionFlag(index: WorldIndex, region: Region): FlagVisual | unde
   return id ? index.flagById.get(id) : undefined;
 }
 
+export function regionIso(index: WorldIndex, region: Region): string | undefined {
+  const raw = walkParent(index, region, (current) => current.iso2);
+  return raw ? raw.toLowerCase() : undefined;
+}
+
 export function regionFact(index: WorldIndex, region: Region): Fact | undefined {
   const id = walkParent(index, region, (current) => current.factId);
   return id ? index.factById.get(id) : undefined;

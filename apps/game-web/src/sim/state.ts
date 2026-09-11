@@ -44,8 +44,15 @@ export function tick(state: GameState, index: WorldIndex, dt: number): void {
     if (!region) continue;
     if (runtime.painting) {
       const boosting = state.time < runtime.boostUntil;
-      runtime.progress = Math.min(1, Math.max(0, runtime.progress + paintRate(rules, region.areaKm2, boosting) * dt));
-      if (runtime.progress >= 1) runtime.painting = false;
+      const origin = runtime.id === state.originId;
+      runtime.progress = Math.min(1, Math.max(0, runtime.progress + paintRate(rules, region.areaKm2, boosting, origin) * dt));
+      if (runtime.progress >= 1) {
+        runtime.painting = false;
+        if (origin && region.parentId) {
+          const parent = state.regions[region.parentId];
+          if (parent && !parent.unlocked) parent.unlocked = true;
+        }
+      }
     }
     state.economy.paint += yieldOf(rules, region.areaKm2, runtime.progress) * dt;
     if (state.time > runtime.boostUntil) runtime.boostUntil = 0;
@@ -61,6 +68,7 @@ export function chooseOrigin(state: GameState, index: WorldIndex, regionId: stri
   state.originId = regionId;
   state.economy.paint += index.catalog.rules.originGrant;
   runtime.unlocked = true;
+  runtime.painting = true;
   selectRegion(state, index, regionId);
   focusFrom(state, index, regionId);
 }

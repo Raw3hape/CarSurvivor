@@ -41,6 +41,11 @@ export const LOOK = {
     cityDistance: 3.25,
     minDistance: 2.95,
     maxDistance: 14,
+    spin: {
+      autoDegPerSec: 9,
+      inertia: 1.55,
+      sensitivity: 0.26,
+    },
   },
   exposure: 1.02,
 } as const;

@@ -17,6 +17,7 @@ export type GlobeScene = {
   pickRegion: (ndcX: number, ndcY: number, index: WorldIndex, state: GameState) => string | null;
   orbit: (dx: number, dy: number) => void;
   dolly: (logDelta: number) => void;
+  setHeld: (held: boolean) => void;
   flyTo: (lon: number, lat: number, distance: number) => void;
   tickCamera: (dt: number) => void;
   distance: () => number;
@@ -42,6 +43,7 @@ export function createGlobeScene(): GlobeScene {
     pickRegion: (x, y, index, state) => pickRegionId(rig.camera, globe.pickSphere, x, y, index, state),
     orbit: (dx, dy) => applyOrbit(rig, dx, dy, 0),
     dolly: (logDelta) => applyOrbit(rig, 0, 0, logDelta),
+    setHeld: (held) => rig.setHeld(held),
     flyTo: (lon, lat, distance) => rig.flyTo(lon, lat, distance),
     tickCamera: (dt) => {
       stars.rotation.y += dt * 0.0035;
