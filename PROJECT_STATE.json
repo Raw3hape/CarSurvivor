@@ -11,6 +11,8 @@
   "web": {
     "path": "apps/game-web",
     "url": "http://127.0.0.1:5173",
+    "live": "https://carsurvivor.vercel.app",
+    "github": "https://github.com/Raw3hape/CarSurvivor",
     "stack": "vite + three WebGPURenderer + rapier3d-compat",
     "role": "feel lab, not the shipping game"
   },

@@ -1,0 +1,14 @@
+apps/game-unity/Library
+apps/game-unity/Logs
+apps/game-unity/Temp
+apps/game-unity/UserSettings
+apps/game-unity/obj
+node_modules
+**/node_modules
+**/dist
+**/test-results
+**/playwright-report
+apps/game-web/public/world/cache
+.grok/tmp
+scratch
+*.blend1

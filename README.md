@@ -11,6 +11,9 @@
 
 Первый playable: **Clay Earth** — глиняная планета, закраска от своего места. Feel в `apps/game-web`. Карта: [docs/PLAYABLE.md](docs/PLAYABLE.md).
 
+Живая сборка: [carsurvivor.vercel.app](https://carsurvivor.vercel.app)  
+Репозиторий: [github.com/Raw3hape/CarSurvivor](https://github.com/Raw3hape/CarSurvivor)
+
 Unity-проект: `apps/game-unity` · версия **6000.3.22f1** · URP.  
 Веб-лаборатория: `apps/game-web` · `http://127.0.0.1:5173`.  
 Исходники 3D: `art/blender`. В Unity уходит проверенный FBX из `art/published`. В веб — GLB из `art/published-web`.
