@@ -1,0 +1,12 @@
+{
+  "name": "CarSurvivor",
+  "unity_editor": "6000.3.22f1",
+  "unity_template": "com.unity.template.urp-blank",
+  "render_pipeline": "URP",
+  "blender": "5.2.0",
+  "art_handoff": "fbx",
+  "web_art_handoff": "glb",
+  "unity_project": "apps/game-unity",
+  "web_project": "apps/game-web",
+  "blender_studio_file": "art/blender/CarSurvivor.blend"
+}

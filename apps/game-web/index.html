@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>CarSurvivor · web lab</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Martian+Mono:wdth,wght@87.5,400;100,400&family=Piazzolla:ital,opsz,wght@0,8..30,400;0,8..30,600;1,14,400&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --font-display: "Piazzolla", "Iowan Old Style", "Palatino Linotype", Palatino, serif;
+        --font-mono: "Martian Mono", ui-monospace, monospace;
+      }
+      #hud {
+        font-family: var(--font-mono);
+        font-variation-settings: "wdth" 87.5;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="game"></canvas>
+    <div id="hud"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

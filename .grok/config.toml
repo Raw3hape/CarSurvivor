@@ -1,0 +1,16 @@
+# Pin Unity MCP to THIS project. The user-level unity-mcp-agent
+# still defaults to World Racing if launched with no args.
+
+[mcp_servers.unity]
+command = "/Users/nikita/.local/bin/unity-mcp-agent"
+args = ["/Users/nikita/Documents/My_Projects/CarSurvivor/apps/game-unity"]
+enabled = true
+startup_timeout_sec = 30
+tool_timeout_sec = 600
+
+[mcp_servers.blender]
+command = "/Users/nikita/.local/bin/blender-mcp-agent"
+args = []
+enabled = true
+startup_timeout_sec = 30
+tool_timeout_sec = 600

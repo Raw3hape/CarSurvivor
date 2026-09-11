@@ -1,0 +1,55 @@
+{
+  "project": "CarSurvivor",
+  "status": "studio-ready",
+  "updated": "2026-09-11",
+  "unity": {
+    "version": "6000.3.22f1",
+    "render_pipeline": "URP",
+    "template": "com.unity.template.urp-blank",
+    "path": "apps/game-unity"
+  },
+  "web": {
+    "path": "apps/game-web",
+    "url": "http://127.0.0.1:5173",
+    "stack": "vite + three WebGPURenderer + rapier3d-compat",
+    "role": "feel lab, not the shipping game"
+  },
+  "blender": {
+    "version": "5.2.0 LTS",
+    "sources": "art/blender",
+    "studio_file": "art/blender/CarSurvivor.blend"
+  },
+  "handoff": {
+    "format": "FBX",
+    "web_format": "GLB",
+    "staging": "art/export/staging",
+    "published": "art/published",
+    "published_web": "art/published-web",
+    "unity_import": "apps/game-unity/Assets/CarSurvivor/Art"
+  },
+  "mcp": {
+    "blender_interactive": "blender-mcp-session start | stop",
+    "blender_headless": "MCP tools ending in _for_cli",
+    "unity_live": "unity-mcp-session start apps/game-unity | stop",
+    "web_verify": "Chrome DevTools MCP + window.__CS_WEB__",
+    "pipeline_package": "session-only, do not keep in Packages/manifest.json"
+  },
+  "playable": {
+    "id": "clay-earth",
+    "title": "Clay Earth",
+    "surface": "apps/game-web",
+    "docs": ["docs/PLAYABLE.md", "docs/ART.md"]
+  },
+  "next_task": "Play Clay Earth in the web lab. Next: street layer, tool shop, or Unity port. Do not copy other games.",
+  "open": [
+    "platform priority (iOS / Android / Mac)",
+    "disc projection vs sphere",
+    "street layer source",
+    "tool shop"
+  ],
+  "not_this_repo": [
+    "/Users/nikita/Documents/My_Projects/Games/World_Racing",
+    "/Users/nikita/Documents/My_Projects/Games/Car_Survivors",
+    "/Users/nikita/Documents/My_Projects/Games/Game_road_fury"
+  ]
+}
